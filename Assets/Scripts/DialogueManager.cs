@@ -10,6 +10,7 @@ public class DialogueManager : MonoBehaviour
     public TMP_Text actorName;
     public TMP_Text messageText;
     public RectTransform backgroundBox;
+    public AudioSource messageSound;
 
     Message[] currentMessages;
     Actor[] currentActors;
@@ -34,7 +35,26 @@ public class DialogueManager : MonoBehaviour
         actorName.text = actorToDisplay.name;
         actorImage.sprite = actorToDisplay.sprite;
 
+        // Play the sound for the current actor
+        if (actorToDisplay.sound != null)
+    {
+            AudioSource audioSource = GetComponent<AudioSource>();
+            audioSource.PlayOneShot(actorToDisplay.sound);
+            Debug.Log("Playing sound for actor: " + actorToDisplay.name);
+    }
+    else
+    {
+        Debug.Log("No sound assigned for actor: " + actorToDisplay.name);
+    }
+
         AnimateTextColor();
+
+        // Play the message sound effect
+        if (messageSound != null && messageSound.clip != null)
+        {
+            messageSound.Play();
+        }
+
     }
 
     public void NextMessage() {

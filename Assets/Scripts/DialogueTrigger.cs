@@ -23,4 +23,5 @@ public class Message {
 public class Actor {
     public string name;
     public Sprite sprite;
+    public AudioClip sound;
 }
