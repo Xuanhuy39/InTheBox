@@ -12,7 +12,9 @@ public class DialogueManager : MonoBehaviour
     public RectTransform backgroundBox;
     public AudioSource messageSound;
     public GameObject popup;
-    public GameObject closeButton; // Reference to the button to be closed
+    public GameObject secondPopup;
+    public GameObject hideButton;
+    public GameObject closeButton;
     public float popupAppearDelay = 2f;
     public float popupEaseDuration = 0.5f;
 
@@ -31,9 +33,9 @@ public class DialogueManager : MonoBehaviour
         DisplayMessage();
 
         // Hide the closeButton if it exists
-        if (closeButton != null)
+        if (hideButton != null)
         {
-            closeButton.SetActive(false);
+            hideButton.SetActive(false);
         }
 
         backgroundBox.LeanScale(Vector3.one, 0.5f).setEaseInOutExpo();
@@ -140,11 +142,35 @@ public class DialogueManager : MonoBehaviour
         StartCoroutine(ShowPopupWithDelay());
     }
 
+    void OnClickCloseButton()
+    {
+        // Hide the first popup
+        popup.SetActive(false);
+
+        // Show the second popup after the specified delay
+        StartCoroutine(ShowSecondPopupWithDelay(popupAppearDelay));
+    }
+
+    IEnumerator ShowSecondPopupWithDelay(float delay)
+    {
+        // Wait for the specified delay before showing the second popup
+        yield return new WaitForSeconds(delay);
+
+        // Show the second popup with easing effect
+        secondPopup.SetActive(true);
+        secondPopup.transform.localScale = Vector3.zero; // Start with zero scale
+        secondPopup.LeanScale(Vector3.one, popupEaseDuration).setEase(LeanTweenType.easeInOutExpo);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         backgroundBox.transform.localScale = Vector3.zero;
         popup.SetActive(false); // Hide the popup at the start
+        secondPopup.SetActive(false); // Hide the second popup at the start
+
+        // Add a click event to the button on the first popup
+        closeButton.GetComponent<Button>().onClick.AddListener(OnClickCloseButton);
     }
 
     // Update is called once per frame
