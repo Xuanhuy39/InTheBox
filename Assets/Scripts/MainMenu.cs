@@ -5,12 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    public void PlayGame ()
+    // Provide the name of the scene you want to load
+    public string sceneToLoad;
+
+    public void PlayGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        // Load the specified scene by name
+        SceneManager.LoadScene(sceneToLoad);
     }
 
-    public void QuitGame ()
+    public void QuitGame()
     {
         Debug.Log("QUIT!");
         Application.Quit();

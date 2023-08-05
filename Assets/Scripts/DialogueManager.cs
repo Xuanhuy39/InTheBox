@@ -1,22 +1,27 @@
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 public class DialogueManager : MonoBehaviour
 {
+    public TabManager tabManager;
     public Image actorImage;
     public TMP_Text actorName;
     public TMP_Text messageText;
     public RectTransform backgroundBox;
     public AudioSource messageSound;
+    public GameObject characterImage;
+    public GameObject darkBackground;
     public GameObject popup;
     public GameObject secondPopup;
     public GameObject hideButton;
     public GameObject closeButton;
+    public GameObject convoPanel;
     public float popupAppearDelay = 2f;
     public float popupEaseDuration = 0.5f;
+    public float characterImageAppearDelay = 1f;
 
     Message[] currentMessages;
     Actor[] currentActors;
@@ -125,6 +130,7 @@ public class DialogueManager : MonoBehaviour
         yield return new WaitForSeconds(popupAppearDelay);
 
         // Show the popup with easing effect
+        darkBackground.SetActive(true);
         ShowPopup();
         popup.transform.localScale = Vector3.zero; // Start with zero scale
         popup.LeanScale(Vector3.one, popupEaseDuration).setEase(LeanTweenType.easeInOutExpo);
@@ -147,12 +153,49 @@ public class DialogueManager : MonoBehaviour
         // Hide the first popup
         popup.SetActive(false);
 
+        //Turn off the dark background
+        darkBackground.SetActive(false);
+
         // Show the second popup after the specified delay
         StartCoroutine(ShowSecondPopupWithDelay(popupAppearDelay));
+
+        // Show the tab buttons and content panels after the second popup appears
+        StartCoroutine(ShowTabsAfterDelay(popupAppearDelay + popupEaseDuration));
     }
 
+    IEnumerator ShowTabsAfterDelay(float delay)
+    {
+        // Wait for the specified delay before showing the tabs
+        yield return new WaitForSeconds(delay);
+
+        // Call the ShowTab method in the TabManager script to show the tabs
+        tabManager.ShowTab(0); // Change the index (0) to the desired default tab index
+    }
+
+    IEnumerator ShowHideButtonAfterDelay(float delay)
+    {
+        // Wait for the specified delay before showing the hideButton
+        yield return new WaitForSeconds(delay);
+
+        // Show the hideButton
+        hideButton.SetActive(true);
+    }
+
+    IEnumerator ShowCharacterImageAfterDelay(float delay)
+    {
+        // Wait for the specified delay before showing the second image
+        yield return new WaitForSeconds(delay);
+
+        // Show the second image with easing effect
+        characterImage.SetActive(true);
+        characterImage.transform.localScale = Vector3.zero; // Start with zero scale
+        characterImage.LeanScale(new Vector3(0.35f, 0.35f, 0.35f), popupEaseDuration).setEase(LeanTweenType.easeInOutExpo);
+    }
     IEnumerator ShowSecondPopupWithDelay(float delay)
     {
+        //Hide the convo panel
+        convoPanel.transform.localScale = Vector3.zero;
+
         // Wait for the specified delay before showing the second popup
         yield return new WaitForSeconds(delay);
 
@@ -168,9 +211,24 @@ public class DialogueManager : MonoBehaviour
         backgroundBox.transform.localScale = Vector3.zero;
         popup.SetActive(false); // Hide the popup at the start
         secondPopup.SetActive(false); // Hide the second popup at the start
+        characterImage.SetActive(false); //Hide the image at the start
+        hideButton.SetActive(false); // Hide the hideButton at the start
+        darkBackground.SetActive(false); // Hide the dark background at the start
 
         // Add a click event to the button on the first popup
         closeButton.GetComponent<Button>().onClick.AddListener(OnClickCloseButton);
+
+        // Call the method to show the second image after the specified delay
+        StartCoroutine(ShowCharacterImageAfterDelay(characterImageAppearDelay));
+
+        // Call the method to show the hideButton after the specified delay
+        StartCoroutine(ShowHideButtonAfterDelay(characterImageAppearDelay + popupAppearDelay));
+
+        // Debug log to indicate that TabManager is initialized
+        Debug.Log("TabManager is initialized.");
+
+        // Access defaultTab value from the TabManager script
+        tabManager.defaultTab = 4; // Replace '0' with the desired default tab index.
     }
 
     // Update is called once per frame

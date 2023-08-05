@@ -23,16 +23,26 @@ public class TabManager : MonoBehaviour
         }
     }
 
-    private void ShowTab(int index)
+    // Change the protection level of the ShowTab method to public
+    public void ShowTab(int index)
     {
+        // Check if the index is within the bounds of the tabContentPanels array
+        if (index < 0 || index >= tabContentPanels.Length)
+        {
+            Debug.LogError("Invalid tab index: " + index);
+            return;
+        }
+
         // Deactivate the currently active tab content
         if (activeTabIndex >= 0)
         {
             tabContentPanels[activeTabIndex].SetActive(false);
+            Debug.Log("Tab " + activeTabIndex + " deactivated.");
         }
 
         // Activate the selected tab content
         tabContentPanels[index].SetActive(true);
+        Debug.Log("Tab " + index + " activated.");
 
         // Move the selected tab indicator to the position of the selected tab button
         Vector2 indicatorPosition = tabButtons[index].transform.position;
